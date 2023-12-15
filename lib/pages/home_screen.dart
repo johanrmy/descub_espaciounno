@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           _animateToCurrentLocation();
         },
-        child: Icon(Icons.my_location),
+        child: const Icon(Icons.my_location, color: AppColors.appLight),
       ),
     );
   }
