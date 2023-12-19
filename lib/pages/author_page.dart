@@ -1,3 +1,5 @@
+import 'package:descub_espaciounno/models/artist_model.dart';
+import 'package:descub_espaciounno/models/mural_count.dart';
 import 'package:descub_espaciounno/widgets/author/author_cards.dart';
 import 'package:descub_espaciounno/widgets/author/author_info.dart';
 import 'package:descub_espaciounno/widgets/author/author_profile.dart';
@@ -7,20 +9,21 @@ import 'package:flutter/material.dart';
 import '../util/colors.dart';
 
 class AuthorPage extends StatelessWidget {
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> artistDataFromApi;
 
-  const AuthorPage({super.key, required this.data});
+  const AuthorPage({super.key, required this.artistDataFromApi});
 
   @override
   Widget build(BuildContext context) {
-    final authorData = data;
-    final String nickname = authorData['nickname'];
-    final List<String> imageUrls = authorData['imageUrls'];
-    final String information = authorData['information'];
-    final int nMurals = authorData['nMurals'];
-    final List<String> usersSocialMedia = authorData['usersSocialMedia'];
-    final String email = authorData['email'];
-    final bool isPartner = authorData['isPartner'];
+    final Artist artistData = artistDataFromApi['dataArtist'];
+    final MuralCount muralCount = artistDataFromApi['dataArtistCount'];
+    final String nickname = artistData.nickname;
+    final List<String> imageUrls = [artistData.urlPhoto1, artistData.urlPhoto2, artistData.urlPhoto3];
+    final String information = artistData.description;
+    final int nMurals = muralCount.count;
+    final List<String> usersSocialMedia = [artistData.userInstagram, artistData.userFacebook, artistData.userTiktok];
+    final String email = artistData.email;
+    final bool isPartner = artistData.isPartner;
 
     return Scaffold(
       appBar: AppBar(

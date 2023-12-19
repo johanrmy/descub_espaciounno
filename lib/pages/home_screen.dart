@@ -20,11 +20,23 @@ class _HomeScreenState extends State<HomeScreen> {
     zoom: 16,
   );
   Position? _currentPosition;
+  bool _locationPermissionGranted = false;
+  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
 
   @override
   void initState() {
     super.initState();
+    _checkLocationPermission();
     _getCurrentLocation();
+    _addCustomIcon();
+  }
+
+  Future<void> _checkLocationPermission() async {
+    final status = await Geolocator.checkPermission();
+    setState(() {
+      _locationPermissionGranted = status == LocationPermission.always ||
+          status == LocationPermission.whileInUse;
+    });
   }
 
   @override
@@ -32,14 +44,24 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: null,
       body: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: _positioncrt,
-          myLocationEnabled: true,
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          }
+        mapType: MapType.normal,
+        initialCameraPosition: _positioncrt,
+        myLocationButtonEnabled: false,
+        myLocationEnabled: _locationPermissionGranted,
+        zoomControlsEnabled: false,
+        markers: {
+          Marker(
+            markerId: const MarkerId("Espacio UNNO"),
+            position: const LatLng(-12.1493747, -77.0228592),
+            //icon: markerIcon,
+            draggable: true,
+            onDragEnd: (value) {
+              // value is the new position
+            },
+          )},
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primaryUNNO,
@@ -60,9 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       LocationService.getPositionStream().listen((Position? newPosition) {
         setState(() {
+          _locationPermissionGranted = true;
           _currentPosition = newPosition;
           if (_currentPosition != null) {
-            print("Latitud: ${_currentPosition!.latitude}, Longitud: ${_currentPosition!.longitude}");
+            print("Latitud: ${_currentPosition!
+                .latitude}, Longitud: ${_currentPosition!.longitude}");
           }
         });
       });
@@ -86,5 +110,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
+  }
+
+  void _addCustomIcon() {
+    BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(60.0, 60.0)), "assets/images/espacio_unno_logo.png")
+        .then(
+          (icon) {
+        setState(() {
+          markerIcon = icon;
+        });
+      },
+    );
   }
 }

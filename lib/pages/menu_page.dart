@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'bottom_nav_bar.dart';
 import '../util/colors.dart';
 import '../widgets/general/customLogo.dart';
 import '../widgets/general/titleApp.dart';
@@ -8,17 +7,19 @@ import '../widgets/menu/menu_background.dart';
 import '../widgets/menu/menu_redirect_button.dart';
 import '../widgets/menu/social_media_button.dart';
 import '../widgets/menu/location_geo_button.dart';
+import 'bottom_nav_bar.dart';
 
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     return AnnotatedRegion(
       value: const SystemUiOverlayStyle(
-        systemNavigationBarColor: AppColors.appDark,
-        statusBarColor: Colors.transparent,
-        statusBarBrightness: Brightness.light
+          systemNavigationBarColor: AppColors.appDark,
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.light
       ),
       child: Scaffold(
         body: Stack(

@@ -1,24 +1,28 @@
+import 'dart:convert';
+
 import 'actual_location_model.dart';
-import 'location_item.dart';
+import 'location_element.dart';
 
-class LocationModel {
-  final ActualLocation actualLocation;
-  final List<LocationItem> locations;
+NearbyLocations nearbyLocationsFromJson(String str) => NearbyLocations.fromJson(json.decode(str));
 
-  LocationModel({
+String nearbyLocationsToJson(NearbyLocations data) => json.encode(data.toJson());
+
+class NearbyLocations {
+  ActualLocation actualLocation;
+  List<LocationElement> locations;
+
+  NearbyLocations({
     required this.actualLocation,
     required this.locations,
   });
 
-  factory LocationModel.fromJson(Map<String, dynamic> json) {
-    final actualLocationJson = json['actualLocation'];
-    final locationsJson = json['locations'] as List;
+  factory NearbyLocations.fromJson(Map<String, dynamic> json) => NearbyLocations(
+    actualLocation: ActualLocation.fromJson(json["actualLocation"]),
+    locations: List<LocationElement>.from(json["locations"].map((x) => LocationElement.fromJson(x))),
+  );
 
-    return LocationModel(
-      actualLocation: ActualLocation.fromJson(actualLocationJson),
-      locations: locationsJson.map((locationItem) {
-        return LocationItem.fromJson(locationItem);
-      }).toList(),
-    );
-  }
+  Map<String, dynamic> toJson() => {
+    "actualLocation": actualLocation.toJson(),
+    "locations": List<dynamic>.from(locations.map((x) => x.toJson())),
+  };
 }

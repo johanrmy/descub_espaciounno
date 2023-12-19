@@ -1,4 +1,5 @@
 import 'package:descub_espaciounno/services/location_geo_service.dart';
+import 'package:descub_espaciounno/util/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -11,6 +12,7 @@ class LocationGeoButton extends StatelessWidget {
   final double Width;
   final double Height;
   final double padding;
+  final Color color;
 
   const LocationGeoButton({super.key,
     required this.latitude,
@@ -21,6 +23,7 @@ class LocationGeoButton extends StatelessWidget {
     this.padding = 0,
     this.Width = 50.0,
     this.Height = 50.0,
+    this.color = AppColors.appLight,
   });
 
   @override
@@ -33,7 +36,7 @@ class LocationGeoButton extends StatelessWidget {
           shadowColor: Colors.transparent
       ),
       child: ColorFiltered(
-        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+        colorFilter: ColorFilter.mode(color, BlendMode.srcATop),
         child: SvgPicture.asset(
           'assets/images/$urlIcon.svg',
           height: svgHeight,

@@ -1,16 +1,19 @@
 class ActualLocation {
-  final double long;
-  final double lat;
+  String long;
+  String lat;
 
   ActualLocation({
     required this.long,
     required this.lat,
   });
 
-  factory ActualLocation.fromJson(Map<String, dynamic> json) {
-    return ActualLocation(
-      long: double.parse(json['long'].toString()),
-      lat: double.parse(json['lat'].toString()),
-    );
-  }
+  factory ActualLocation.fromJson(Map<String, dynamic> json) => ActualLocation(
+    long: json["long"],
+    lat: json["lat"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "long": long,
+    "lat": lat,
+  };
 }

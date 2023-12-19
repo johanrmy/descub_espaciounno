@@ -1,6 +1,13 @@
 import 'dart:io';
-import 'package:descub_espaciounno/data/data.dart';
+import 'package:descub_espaciounno/models/mural_count.dart';
+import 'package:descub_espaciounno/models/nearby_location_model.dart';
+import 'package:descub_espaciounno/models/scan_model.dart';
+import 'package:descub_espaciounno/services/current_location_service.dart';
+import 'package:descub_espaciounno/services/device_info_service.dart';
+import 'package:descub_espaciounno/services/api_service.dart';
+import 'package:descub_espaciounno/util/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QrScanner extends StatefulWidget {
@@ -17,6 +24,10 @@ class _QRViewState extends State<QrScanner> {
   late Barcode? result;
   late QRViewController? controller;
   bool isDisposed = false;
+  Position? _currentPosition;
+  Map<String, dynamic> data = {};
+  String deviceModel = 'unknown';
+  String deviceBrand = 'unknown';
 
   @override
   void reassemble() {
@@ -35,6 +46,7 @@ class _QRViewState extends State<QrScanner> {
       isDisposed = false;
       controller?.resumeCamera();
     }
+    _getDeviceInfo();
   }
 
   @override
@@ -58,20 +70,52 @@ class _QRViewState extends State<QrScanner> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
+
+    controller.scannedDataStream.listen((scanData) async {
       setState(() {
         result = scanData;
       });
 
       if (result != null && result!.code != null) {
         controller.pauseCamera();
-        final Map<String, dynamic> muralData = muralPageJson;
-        Navigator.pushNamed(context, '/navbar/mural', arguments: muralData)
-            .then((_) {
-              controller.resumeCamera();
-        });
+        final apiUrl = result!.code;
+        try {
+          final newPosition = await LocationService.determinePosition();
+
+          setState(() {
+            _currentPosition = newPosition;
+          });
+          print(_currentPosition!.latitude);
+          print(_currentPosition!.longitude);
+          NearbyLocation dataFromApi1 = await ApiService.fetchData(apiUrl!, _currentPosition!.latitude, _currentPosition!.longitude);
+          MuralCount dataFromApi2 = await ApiService.getMuralCount(apiUrl, dataFromApi1.artist.nickname);
+
+          Scan scan = Scan(partnershipId: dataFromApi1.partnership.id, model: deviceModel, brand: deviceBrand);
+
+          data['nearbyLocation'] = dataFromApi1;
+          data['count'] = dataFromApi2;
+          data['setScan'] = scan;
+          data['apiUrl'] = apiUrl;
+
+          if (!context.mounted) return;
+          Navigator.pushNamed(context, '/navbar/mural', arguments: data)
+              .then((_) {
+            controller.resumeCamera();
+          });
+        } catch (e) {
+          Map<String, dynamic> info = {'message':'Al parecer no hay asociaciones cerca o el código qr es inválido :(', 'background' : AppColors.primaryDescub};
+          Navigator.pushNamed(context, '/navbar/notFound', arguments: info)
+              .then((_) {
+            controller.resumeCamera();
+          });
+        }
       }
     });
+  }
+
+  Future<void> _getDeviceInfo() async {
+    deviceModel = await DeviceInfoService.getDeviceModel();
+    deviceBrand = await DeviceInfoService.getDeviceBrand();
   }
 
   @override

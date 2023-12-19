@@ -1,3 +1,4 @@
+import 'package:descub_espaciounno/util/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../services/social_media_service.dart';
@@ -11,6 +12,7 @@ class SocialMediaButton extends StatelessWidget {
   final double Width;
   final double Height;
   final double padding;
+  final Color color;
 
   const SocialMediaButton({super.key,
     required this.username,
@@ -21,6 +23,7 @@ class SocialMediaButton extends StatelessWidget {
     this.padding = 10.0,
     this.Width = 50.0,
     this.Height = 50.0,
+    this.color = AppColors.appLight,
   });
 
   @override
@@ -33,7 +36,7 @@ class SocialMediaButton extends StatelessWidget {
         shadowColor: Colors.transparent
       ),
       child: ColorFiltered(
-        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
+        colorFilter: ColorFilter.mode(color, BlendMode.srcATop),
         child: SvgPicture.asset(
           'assets/images/$urlIcon.svg',
           height: svgHeight,

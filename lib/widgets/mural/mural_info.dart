@@ -1,3 +1,5 @@
+import 'package:descub_espaciounno/models/artist_model.dart';
+import 'package:descub_espaciounno/models/mural_count.dart';
 import 'package:flutter/material.dart';
 
 class MuralInfo extends StatelessWidget {
@@ -5,7 +7,8 @@ class MuralInfo extends StatelessWidget {
   final String description;
   final String author;
   final String muralDate;
-  final Map<String, dynamic> authorInfo;
+  final Artist artistData;
+  final MuralCount muralCount;
 
   const MuralInfo({
     Key? key,
@@ -13,7 +16,8 @@ class MuralInfo extends StatelessWidget {
     required this.description,
     required this.author,
     required this.muralDate,
-    required this.authorInfo,
+    required this.artistData,
+    required this.muralCount
   }) : super(key: key);
 
   @override
@@ -25,6 +29,7 @@ class MuralInfo extends StatelessWidget {
       fontWeight: FontWeight.w300,
       color: Colors.black,
     );
+    Map<String, dynamic> data = {};
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
@@ -88,8 +93,12 @@ class MuralInfo extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          final Map<String, dynamic> authorData = authorInfo;
-                          Navigator.pushNamed(context, '/navbar/mural/author', arguments: authorData);
+                          final Artist dataArtist = artistData;
+                          final MuralCount  dataArtistCount = muralCount;
+
+                          data['dataArtist'] = dataArtist;
+                          data['dataArtistCount'] = dataArtistCount;
+                          Navigator.pushNamed(context, '/navbar/mural/author', arguments: data);
                         },
                         child: RichText(
                           text: TextSpan(

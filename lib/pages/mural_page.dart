@@ -1,29 +1,55 @@
-import 'package:descub_espaciounno/util/colors.dart';
 import 'package:flutter/material.dart';
-import '../widgets/mural/carousel_slider.dart';
-import '../widgets/mural/mural_colors.dart';
-import '../widgets/mural/mural_info.dart';
-import '../widgets/mural/mural_reward_button.dart';
+import 'package:descub_espaciounno/models/artist_model.dart';
+import 'package:descub_espaciounno/models/mural_count.dart';
+import 'package:descub_espaciounno/models/nearby_location_model.dart';
+import 'package:descub_espaciounno/models/scan_model.dart';
+import 'package:descub_espaciounno/util/colors.dart';
+import 'package:descub_espaciounno/services/api_service.dart';
+import 'package:descub_espaciounno/widgets/mural/carousel_slider.dart';
+import 'package:descub_espaciounno/widgets/mural/mural_colors.dart';
+import 'package:descub_espaciounno/widgets/mural/mural_info.dart';
+import 'package:descub_espaciounno/widgets/general/custom_button.dart';
 
 class MuralPage extends StatefulWidget {
-  final Map<String, dynamic> qrCodeValue;
+  final Map<String, dynamic> dataFromApi;
 
-  const MuralPage({Key? key, required this.qrCodeValue}) : super(key: key);
+  const MuralPage({Key? key, required this.dataFromApi}) : super(key: key);
 
   @override
   MuralPageState createState() => MuralPageState();
 }
 
 class MuralPageState extends State<MuralPage> {
+  Future<void> sendScanDataToApi() async {
+    try {
+      String apiUrl = widget.dataFromApi['apiUrl'];
+      Scan scanData = widget.dataFromApi['setScan'];
+
+      await ApiService.postDataScan(apiUrl, scanData);
+
+    } catch (e) {
+      print('Error sending scan data: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    sendScanDataToApi();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final muraldata = widget.qrCodeValue;
-    final List<String> images = muraldata['muralImages'];
-    final String title = muraldata['muralTitle'];
-    final String description = muraldata['muralDescription'];
-    final String date = muraldata['muralDate'];
-    final Map<String, dynamic> author = muraldata['author'];
-    final List<String> colors = muraldata['muralColors'];
+    final NearbyLocation muralData = widget.dataFromApi['nearbyLocation'];
+    final List<String> images = [muralData.mural.urlPhoto1, muralData.mural.urlPhoto2, muralData.mural.urlPhoto3];
+    final String title = muralData.mural.name;
+    final String description = muralData.mural.description;
+    final String date = muralData.mural.creationDate;
+    final List<String> colors = muralData.mural.colors;
+    final Artist artist = muralData.artist;
+    final MuralCount muralCount = widget.dataFromApi['count'];
+    final String apiUrl = widget.dataFromApi['apiUrl'];
+
 
     double screenHeight = MediaQuery.of(context).size.width - 50;
     return Scaffold(
@@ -34,7 +60,7 @@ class MuralPageState extends State<MuralPage> {
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
-        color: Colors.white,
+        color: AppColors.appLight,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Center(
@@ -47,15 +73,19 @@ class MuralPageState extends State<MuralPage> {
                   title: title,
                   description:
                   description,
-                  author: author['nickname'],
+                  author: artist.name,
                   muralDate: date,
-                  authorInfo: author,
+                  artistData: artist,
+                  muralCount: muralCount,
                 ),
                 MuralColors(
                   hexColors: colors,
                 ),
                 const Spacer(),
-                MuralRewardButton(buttonText: "Obtener Recompensa", onPressed: () {}),
+                CustomButton(buttonText: "Obtener Recompensa",color: AppColors.primaryUNNO ,
+                    onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/coupon', arguments: apiUrl);
+                }),
                 const Spacer()
               ],
             ),

@@ -1,11 +1,12 @@
 import 'package:descub_espaciounno/util/colors.dart';
 import 'package:flutter/material.dart';
 
-class MuralRewardButton extends StatelessWidget{
+class CustomButton extends StatelessWidget{
   final String buttonText;
   final VoidCallback onPressed;
+  final Color color;
 
-  const MuralRewardButton({super.key, required this.buttonText, required this.onPressed});
+  const CustomButton({super.key, required this.buttonText, required this.onPressed, this.color = AppColors.appDark});
 
   @override
   Widget build(BuildContext context) {
@@ -20,24 +21,22 @@ class MuralRewardButton extends StatelessWidget{
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              side: const BorderSide(
-                color: AppColors.primaryUNNO,
+              side: BorderSide(
+                color: color,
               ),
               backgroundColor: AppColors.appLight,
               elevation: 5
             ),
             child: Text(
               buttonText,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.w500,
-                color: AppColors.primaryUNNO,
+                color: color,
               ),
             ),
           ),
         )
-    );
+    );}
   }
-
-}

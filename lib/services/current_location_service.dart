@@ -1,4 +1,3 @@
-// location_service.dart
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
@@ -34,8 +33,18 @@ class LocationService {
     return Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: 2,
+        distanceFilter: 5,
       ),
     );
+  }
+
+  static Future<Position> getMyCurrentLocation() async {
+    try {
+      Position currentPosition = await LocationService.determinePosition();
+      return currentPosition;
+    } catch (e) {
+      print('Error obteniendo la ubicación: $e');
+      rethrow;
+    }
   }
 }

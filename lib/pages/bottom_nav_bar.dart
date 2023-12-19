@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'home_screen.dart';
 import 'scanner_page.dart';
-import 'profile_screen.dart';
+import 'info_page.dart';
 import 'package:descub_espaciounno/util/colors.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -18,7 +18,7 @@ class BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _widgetOptions = [
     const HomeScreen(),
     const ScannerPage(),
-    const ProfileScreen(),
+    const InfoPage(),
   ];
 
   void _onItemTapped(int index) {
