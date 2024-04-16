@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/current_location_service.dart';
+import '../services/api_service.dart';
+import '../util/env.dart'; // Importa el archivo api_service.dart
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,7 +23,11 @@ class _HomeScreenState extends State<HomeScreen> {
   );
   Position? _currentPosition;
   bool _locationPermissionGranted = false;
-  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
+  Set<Marker> _markers = {
+    const Marker(
+      markerId: MarkerId("Espacio UNNO"),
+      position: LatLng(-12.1493747, -77.0228592),
+    ),};
 
   @override
   void initState() {
@@ -49,16 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
         myLocationButtonEnabled: false,
         myLocationEnabled: _locationPermissionGranted,
         zoomControlsEnabled: false,
-        markers: {
-          Marker(
-            markerId: const MarkerId("Espacio UNNO"),
-            position: const LatLng(-12.1493747, -77.0228592),
-            //icon: markerIcon,
-            draggable: true,
-            onDragEnd: (value) {
-              // value is the new position
-            },
-          )},
+        markers: _markers,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
@@ -87,6 +84,15 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_currentPosition != null) {
             print("Latitud: ${_currentPosition!
                 .latitude}, Longitud: ${_currentPosition!.longitude}");
+            ApiService.getNearbyLocations(
+                Env.url,
+                _currentPosition!.latitude, _currentPosition!.longitude)
+                .then((value) {
+              setState(() {
+                _markers =
+                value as Set<Marker>;
+              });
+            });
           }
         });
       });
@@ -114,11 +120,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _addCustomIcon() {
     BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(60.0, 60.0)), "assets/images/espacio_unno_logo.png")
+        const ImageConfiguration(size: Size(60.0, 60.0)),
+        "assets/images/espacio_unno_logo.png")
         .then(
           (icon) {
         setState(() {
-          markerIcon = icon;
+          var markerIcon = icon;
         });
       },
     );
