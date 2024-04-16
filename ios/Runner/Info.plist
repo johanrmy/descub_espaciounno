@@ -72,5 +72,7 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
+	<key>NSDocumentsFolderUsageDescription</key>
+    <string>We need access to save files.</string>
 </dict>
 </plist>
