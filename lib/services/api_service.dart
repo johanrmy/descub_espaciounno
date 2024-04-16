@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:descub_espaciounno/models/artist_model.dart';
+import 'package:descub_espaciounno/models/ip_api_model.dart';
+import 'package:descub_espaciounno/models/nearby_locations_model.dart';
 import 'package:dio/dio.dart';
 import 'package:descub_espaciounno/models/mural_count.dart';
 import 'package:descub_espaciounno/models/nearby_location_model.dart';
@@ -24,6 +27,22 @@ class ApiService {
     }
   }
 
+  static Future<NearbyLocations> getNearbyLocations(String apiUrl, double latitude, double longitude) async{
+    try {
+      final response = await dio.get(
+        '$apiUrl/partnerships/byNearbyMurals/$longitude/$latitude',
+      );
+
+      if (response.statusCode == 200) {
+        return NearbyLocations.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
+    }
+  }
+
   static Future<MuralCount> getMuralCount(String apiUrl, String nickname) async {
     try {
       final response = await dio.get(
@@ -32,6 +51,22 @@ class ApiService {
 
       if (response.statusCode == 200) {
         return MuralCount.fromJson(response.data);
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
+    }
+  }
+
+  static Future<Artist> getArtist(String apiUrl, String nickname) async {
+    try {
+      final response = await dio.get(
+        '$apiUrl/artists/byNickname/$nickname',
+      );
+
+      if (response.statusCode == 200) {
+        return Artist.fromJson(response.data);
       } else {
         throw Exception('Failed to load data');
       }
@@ -78,6 +113,25 @@ class ApiService {
       }
     } catch (error) {
       throw Exception('Error de red: $error');
+    }
+  }
+
+  static Future<IpApi> getIpAPI(String envurl) async {
+    try {
+      final response = await dio.get(envurl);
+
+      if (response.statusCode == 200) {
+        if (response.data is String) {
+          final Map<String, dynamic> jsonData = jsonDecode(response.data);
+          return IpApi.fromJson(jsonData);
+        } else {
+          throw Exception('Error: response data is not a String');
+        }
+      } else {
+        throw Exception('Error: failed to load IpAPI data');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
     }
   }
 }

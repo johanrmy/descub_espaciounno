@@ -47,4 +47,12 @@ class LocationService {
       rethrow;
     }
   }
+
+  static Future<LocationPermission> checkLocationPermission() async {
+    return await Geolocator.checkPermission();
+  }
+
+  static Future<void> requestLocationPermission() async {
+    await Geolocator.requestPermission();
+  }
 }
