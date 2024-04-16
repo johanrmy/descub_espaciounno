@@ -2,10 +2,11 @@ import 'package:descub_espaciounno/pages/not_found_page.dart';
 import 'package:descub_espaciounno/util/colors.dart';
 import 'package:descub_espaciounno/services/api_service.dart';
 import 'package:descub_espaciounno/models/coupon_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:screenshot/screenshot.dart';
 
 class CouponPage extends StatefulWidget {
   final String inputDataFromApi;
@@ -19,6 +20,7 @@ class CouponPage extends StatefulWidget {
 class CouponPageState extends State<CouponPage> {
   Coupon? _coupon;
   bool _loading = true;
+  ScreenshotController screenshotController = ScreenshotController();
 
   Future<void> getCouponDataFromApi() async {
     try {
@@ -39,6 +41,22 @@ class CouponPageState extends State<CouponPage> {
     }
   }
 
+  SaveToGallery(){
+    screenshotController.capture().then((Uint8List? image){
+      SaveScreenshotGallery(image!);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text("Cupón guardado en la galería"),
+      )
+    );
+  }
+
+  SaveScreenshotGallery(Uint8List bytes)async{
+    String id = _coupon!.id;
+    await ImageGallerySaver.saveImage(bytes, name: 'espaciounnoCP$id');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -54,10 +72,13 @@ class CouponPageState extends State<CouponPage> {
         statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.light,
       ),
-      child: Scaffold(
-        backgroundColor: AppColors.primaryUNNO,
-        body: _buildContent(),
-      ),
+      child: Screenshot(
+        controller: screenshotController,
+        child: Scaffold(
+          backgroundColor: AppColors.primaryUNNO,
+          body: _buildContent(),
+        ),
+      )
     );
   }
 
@@ -67,7 +88,7 @@ class CouponPageState extends State<CouponPage> {
     } else if (_coupon != null) {
       return _buildCouponContent();
     } else {
-      Map<String, dynamic> info = {'message': 'Al paracer no hay cupones activos o tuvimos un problema con la red :(', 'background': AppColors.secondaryDescub};
+      Map<String, dynamic> info = {'message': 'Al paracer no hay cupones activos o tuvimos un problema con la red :(', 'background': AppColors.secondaryDescub, 'colortext': AppColors.appDark};
       return NotFoundPage(info: info);
     }
   }
@@ -136,13 +157,14 @@ class CouponPageState extends State<CouponPage> {
         Align(
           alignment: Alignment.bottomCenter,
           child: Container(
-            margin: const EdgeInsets.only(bottom: 120.0),
+            margin: const EdgeInsets.only(bottom: 130.0),
             child: BarcodeWidget(
               barcode: Barcode.code128(),
               data: _coupon!.id,
               width: 300,
               height: 110,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24, color: AppColors.secondaryDescub),
+              color: AppColors.appLightS,
             ),
           )
         ),
@@ -155,11 +177,27 @@ class CouponPageState extends State<CouponPage> {
             decoration: BoxDecoration(
               border: Border.all(
                 color: AppColors.secondaryDescub,
-                width: 2.0,
+                width: 3.0,
               ),
             ),
           ),
-        )
+        ),
+        Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+                margin: const EdgeInsets.only(bottom: 60.0, right: 40.0),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.download,
+                    size: 40,
+                    color: AppColors.secondaryDescub,
+                  ),
+                  onPressed: () {
+                    SaveToGallery();
+                  },
+                )
+            )
+        ),
       ],
     );
   }
