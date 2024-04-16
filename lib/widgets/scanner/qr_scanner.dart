@@ -103,7 +103,7 @@ class _QRViewState extends State<QrScanner> {
             controller.resumeCamera();
           });
         } catch (e) {
-          Map<String, dynamic> info = {'message':'Al parecer no hay asociaciones cerca o el código qr es inválido :(', 'background' : AppColors.primaryDescub};
+          Map<String, dynamic> info = {'message':'Al parecer no hay asociaciones cerca o el código qr es inválido :(', 'background' : AppColors.appLightS, 'colortext': AppColors.primaryDescub};
           Navigator.pushNamed(context, '/navbar/notFound', arguments: info)
               .then((_) {
             controller.resumeCamera();
