@@ -24,7 +24,7 @@ class Coupon {
     discount: json["discount"],
     status: json["status"],
     couponGenerateId: json["coupon_generate_id"],
-    couponGenerate: CouponGenerate.fromJson(json["COUPON_GENERATE"]),
+    couponGenerate: CouponGenerate.fromJson(json["coupon_generate"]),
   );
 
   Map<String, dynamic> toJson() => {

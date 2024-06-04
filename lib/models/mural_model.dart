@@ -3,7 +3,6 @@ class Mural {
   String name;
   String description;
   Location location;
-  String addressId;
   String urlPhoto1;
   String urlPhoto2;
   String urlPhoto3;
@@ -18,7 +17,6 @@ class Mural {
     required this.name,
     required this.description,
     required this.location,
-    required this.addressId,
     required this.urlPhoto1,
     required this.urlPhoto2,
     required this.urlPhoto3,
@@ -34,7 +32,6 @@ class Mural {
     name: json["name"],
     description: json["description"],
     location: Location.fromJson(json["location"]),
-    addressId: json["address_id"],
     urlPhoto1: json["url_photo_1"],
     urlPhoto2: json["url_photo_2"],
     urlPhoto3: json["url_photo_3"],
@@ -42,7 +39,7 @@ class Mural {
     creationDate: json['creation_date'],
     createDatetime: DateTime.parse(json["create_datetime"]),
     updateDatetime: DateTime.parse(json["update_datetime"]),
-    address: Address.fromJson(json["ADDRESS"]),
+    address: Address.fromJson(json["address"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -50,7 +47,6 @@ class Mural {
     "name": name,
     "description": description,
     "location": location.toJson(),
-    "address_id": addressId,
     "url_photo_1": urlPhoto1,
     "url_photo_2": urlPhoto2,
     "url_photo_3": urlPhoto3,
@@ -58,7 +54,7 @@ class Mural {
     "creation_date": creationDate,
     "create_datetime": createDatetime.toIso8601String(),
     "update_datetime": updateDatetime.toIso8601String(),
-    "ADDRESS": address.toJson(),
+    "address": address.toJson(),
   };
 }
 
@@ -67,14 +63,14 @@ class Address {
   String name;
   DateTime createDatetime;
   DateTime updateDatetime;
-  String districtId;
+  District district;
 
   Address({
     required this.id,
     required this.name,
     required this.createDatetime,
     required this.updateDatetime,
-    required this.districtId,
+    required this.district,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) => Address(
@@ -82,7 +78,7 @@ class Address {
     name: json["name"],
     createDatetime: DateTime.parse(json["create_datetime"]),
     updateDatetime: DateTime.parse(json["update_datetime"]),
-    districtId: json["district_id"],
+    district: District.fromJson(json['district']),
   );
 
   Map<String, dynamic> toJson() => {
@@ -90,7 +86,67 @@ class Address {
     "name": name,
     "create_datetime": createDatetime.toIso8601String(),
     "update_datetime": updateDatetime.toIso8601String(),
-    "district_id": districtId,
+    "district": district,
+  };
+}
+
+class District {
+  String id;
+  String name;
+  DateTime createDatetime;
+  DateTime updateDatetime;
+  City city;
+
+  District({
+    required this.id,
+    required this.name,
+    required this.createDatetime,
+    required this.updateDatetime,
+    required this.city,
+  });
+
+  factory District.fromJson(Map<String, dynamic> json) => District(
+    id: json["id"],
+    name: json["name"],
+    createDatetime: DateTime.parse(json["create_datetime"]),
+    updateDatetime: DateTime.parse(json["update_datetime"]),
+    city: City.fromJson(json["city"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "create_datetime": createDatetime.toIso8601String(),
+    "update_datetime": updateDatetime.toIso8601String(),
+    "city": city.toJson(),
+  };
+}
+
+class City {
+  String id;
+  String name;
+  DateTime createDatetime;
+  DateTime updateDatetime;
+
+  City({
+    required this.id,
+    required this.name,
+    required this.createDatetime,
+    required this.updateDatetime,
+  });
+
+  factory City.fromJson(Map<String, dynamic> json) => City(
+    id: json["id"],
+    name: json["name"],
+    createDatetime: DateTime.parse(json["create_datetime"]),
+    updateDatetime: DateTime.parse(json["update_datetime"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "create_datetime": createDatetime.toIso8601String(),
+    "update_datetime": updateDatetime.toIso8601String(),
   };
 }
 
