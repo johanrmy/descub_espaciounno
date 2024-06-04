@@ -3,6 +3,7 @@ import 'package:descub_espaciounno/util/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../models/mural_model.dart';
 import '../services/current_location_service.dart';
 import '../services/api_service.dart';
 import '../util/env.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final Completer<GoogleMapController> _controller =
   Completer<GoogleMapController>();
+  List<Mural> _murals = [];
   static const CameraPosition _positioncrt = CameraPosition(
     target: LatLng(-12.1493747, -77.0228592),
     zoom: 16,
@@ -35,6 +37,36 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkLocationPermission();
     _getCurrentLocation();
     _addCustomIcon();
+    _fetchMurals();
+  }
+
+  Future<void> _fetchMurals() async {
+    try {
+      List<Mural> murals = await ApiService.getAllMurals(Env.url);
+      setState(() {
+        _murals = murals;
+      });
+      _addMuralMarkers();
+    } catch (error) {
+      print('Error fetching murals: $error');
+    }
+  }
+
+  void _addMuralMarkers() {
+    Set<Marker> markers = {};
+    for (Mural mural in _murals) {
+      Marker marker = Marker(
+        markerId: MarkerId(mural.id),
+        position: LatLng(
+          mural.location.coordinates[1], // Latitud
+          mural.location.coordinates[0], // Longitud
+        ),
+      );
+      markers.add(marker);
+    }
+    setState(() {
+      _markers = markers;
+    });
   }
 
   Future<void> _checkLocationPermission() async {

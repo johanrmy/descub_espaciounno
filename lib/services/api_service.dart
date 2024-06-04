@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:descub_espaciounno/models/artist_model.dart';
 import 'package:descub_espaciounno/models/ip_api_model.dart';
+import 'package:descub_espaciounno/models/mural_model.dart';
 import 'package:descub_espaciounno/models/nearby_locations_model.dart';
 import 'package:dio/dio.dart';
 import 'package:descub_espaciounno/models/mural_count.dart';
@@ -113,6 +114,24 @@ class ApiService {
       }
     } catch (error) {
       throw Exception('Error de red: $error');
+    }
+  }
+
+  static Future<List<Mural>> getAllMurals(String apiUrl) async {
+    try {
+      final response = await dio.get(
+        '$apiUrl/murals',
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> muralJsonList = response.data;
+        List<Mural> murals = muralJsonList.map((json) => Mural.fromJson(json)).toList();
+        return murals;
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
     }
   }
 
