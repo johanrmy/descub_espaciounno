@@ -73,7 +73,7 @@ class MuralPageState extends State<MuralPage> {
                   title: title,
                   description:
                   description,
-                  author: artist.name,
+                  author: artist.nickname,
                   muralDate: date,
                   artistData: artist,
                   muralCount: muralCount,
