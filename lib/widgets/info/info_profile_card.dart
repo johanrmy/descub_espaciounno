@@ -45,11 +45,11 @@ class _ProfileCardState extends State<ProfileCard> {
   }
 
   Future<void> getMuralCount() async {
-    muralCount = await ApiService.getMuralCount(ipAPI!.url, widget.name);
+    muralCount = await ApiService.getMuralCount(ipApiUrl!, widget.name);
   }
 
   Future<void> getArtist() async {
-    artistData = await ApiService.getArtist(ipAPI!.url, widget.name);
+    artistData = await ApiService.getArtist(ipApiUrl!, widget.name);
   }
 
   void _navigateToNextPage() {

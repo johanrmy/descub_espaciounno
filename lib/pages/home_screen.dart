@@ -16,8 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Completer<GoogleMapController> _controller =
-  Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
   List<Mural> _murals = [];
   static const CameraPosition _positioncrt = CameraPosition(
     target: LatLng(-12.1493747, -77.0228592),
@@ -25,24 +24,42 @@ class _HomeScreenState extends State<HomeScreen> {
   );
   Position? _currentPosition;
   bool _locationPermissionGranted = false;
-  Set<Marker> _markers = {
-    const Marker(
-      markerId: MarkerId("Espacio UNNO"),
-      position: LatLng(-12.1493747, -77.0228592),
-    ),};
+  Set<Marker> _markers = {};
+  BitmapDescriptor? _customIcon;
 
   @override
   void initState() {
     super.initState();
+    _loadCustomIcon();
     _checkLocationPermission();
     _getCurrentLocation();
-    _addCustomIcon();
     _fetchMurals();
+  }
+
+  Future<void> _loadCustomIcon() async {
+    _customIcon = await BitmapDescriptor.fromAssetImage(
+      const ImageConfiguration(size: Size(96, 96)),
+      'assets/images/unno_marker.png',
+    );
+    _addInitialMarker();
+  }
+
+  void _addInitialMarker() {
+    final initialMarker = Marker(
+      markerId: const MarkerId('Espacio UNNO'),
+      position: const LatLng(-12.1493747, -77.0228592),
+      icon: _customIcon ?? BitmapDescriptor.defaultMarker,
+    );
+    setState(() {
+      _markers.add(initialMarker);
+    });
   }
 
   Future<void> _fetchMurals() async {
     try {
-      List<Mural> murals = await ApiService.getAllMurals(Env.url);
+      final ipApiData = await ApiService.getIpAPI(Env.url);
+      print('Instancia: ${ipApiData.instancia}, ID: ${ipApiData.id}, URL: ${ipApiData.url}');
+      List<Mural> murals = await ApiService.getAllMurals(ipApiData.url);
       setState(() {
         _murals = murals;
       });
@@ -53,7 +70,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _addMuralMarkers() {
-    Set<Marker> markers = {};
+    Set<Marker> markers = {
+      Marker(
+        markerId: const MarkerId("Espacio UNNO"),
+        position: const LatLng(-12.1493747, -77.0228592),
+        icon: _customIcon ?? BitmapDescriptor.defaultMarker,
+      ),
+    };
+
     for (Mural mural in _murals) {
       Marker marker = Marker(
         markerId: MarkerId(mural.id),
@@ -61,12 +85,39 @@ class _HomeScreenState extends State<HomeScreen> {
           mural.location.coordinates[1], // Latitud
           mural.location.coordinates[0], // Longitud
         ),
+        infoWindow: InfoWindow(
+          title: mural.name,
+          onTap: () {
+            _showMarkerInfo(mural.name, mural.urlPhoto1);
+          },
+        ),
       );
       markers.add(marker);
     }
+
     setState(() {
-      _markers = markers;
+      _markers.addAll(markers);
     });
+  }
+
+  void _showMarkerInfo(String title, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Image.network(imageUrl),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _checkLocationPermission() async {
@@ -114,15 +165,20 @@ class _HomeScreenState extends State<HomeScreen> {
           _locationPermissionGranted = true;
           _currentPosition = newPosition;
           if (_currentPosition != null) {
-            print("Latitud: ${_currentPosition!
-                .latitude}, Longitud: ${_currentPosition!.longitude}");
+            print("Latitud: ${_currentPosition!.latitude}, Longitud: ${_currentPosition!.longitude}");
             ApiService.getNearbyLocations(
                 Env.url,
                 _currentPosition!.latitude, _currentPosition!.longitude)
                 .then((value) {
               setState(() {
-                _markers =
-                value as Set<Marker>;
+                _markers = {
+                  Marker(
+                    markerId: const MarkerId("Espacio UNNO"),
+                    position: const LatLng(-12.1493747, -77.0228592),
+                    icon: _customIcon ?? BitmapDescriptor.defaultMarker,
+                  ),
+                };
+                _markers.addAll(value as Set<Marker>);
               });
             });
           }
@@ -148,18 +204,5 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
-  }
-
-  void _addCustomIcon() {
-    BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(60.0, 60.0)),
-        "assets/images/espacio_unno_logo.png")
-        .then(
-          (icon) {
-        setState(() {
-          var markerIcon = icon;
-        });
-      },
-    );
   }
 }
