@@ -21,8 +21,8 @@ class QrScanner extends StatefulWidget {
 
 class _QRViewState extends State<QrScanner> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  late Barcode? result;
-  late QRViewController? controller;
+  Barcode? result;
+  QRViewController? controller;
   bool isDisposed = false;
   Position? _currentPosition;
   Map<String, dynamic> data = {};
@@ -87,29 +87,42 @@ class _QRViewState extends State<QrScanner> {
           });
           print(_currentPosition!.latitude);
           print(_currentPosition!.longitude);
-          NearbyLocation dataFromApi1 = await ApiService.fetchData(apiUrl!, _currentPosition!.latitude, _currentPosition!.longitude);
-          MuralCount dataFromApi2 = await ApiService.getMuralCount(apiUrl, dataFromApi1.artist.nickname);
 
-          Scan scan = Scan(partnershipId: dataFromApi1.partnership.id, model: deviceModel, brand: deviceBrand);
+          try {
+            NearbyLocation dataFromApi1 = await ApiService.fetchData(apiUrl!, _currentPosition!.latitude, _currentPosition!.longitude);
+            MuralCount dataFromApi2 = await ApiService.getMuralCount(apiUrl, dataFromApi1.artist.nickname);
 
-          data['nearbyLocation'] = dataFromApi1;
-          data['count'] = dataFromApi2;
-          data['setScan'] = scan;
-          data['apiUrl'] = apiUrl;
+            Scan scan = Scan(partnershipId: dataFromApi1.partnership.id, model: deviceModel, brand: deviceBrand);
 
-          if (!context.mounted) return;
-          Navigator.pushNamed(context, '/navbar/mural', arguments: data)
-              .then((_) {
-            controller.resumeCamera();
-          });
+            data['nearbyLocation'] = dataFromApi1;
+            data['count'] = dataFromApi2;
+            data['setScan'] = scan;
+            data['apiUrl'] = apiUrl;
+
+            if (!context.mounted) return;
+            Navigator.pushNamed(context, '/navbar/mural', arguments: data).then((_) {
+              controller.resumeCamera();
+            });
+          } catch (e) {
+            print('Error fetching data from API: $e');
+            _handleApiError(context, controller);
+          }
         } catch (e) {
-          Map<String, dynamic> info = {'message':'Al parecer no hay asociaciones cerca o el código qr es inválido :(', 'background' : AppColors.appLightS, 'colortext': AppColors.primaryDescub};
-          Navigator.pushNamed(context, '/navbar/notFound', arguments: info)
-              .then((_) {
-            controller.resumeCamera();
-          });
+          print('Error determining position: $e');
+          _handleApiError(context, controller);
         }
       }
+    });
+  }
+
+  void _handleApiError(BuildContext context, QRViewController? controller) {
+    Map<String, dynamic> info = {
+      'message': 'Al parecer no hay asociaciones cerca o el código QR es inválido :(',
+      'background': AppColors.appLightS,
+      'colortext': AppColors.primaryDescub
+    };
+    Navigator.pushNamed(context, '/navbar/notFound', arguments: info).then((_) {
+      controller?.resumeCamera();
     });
   }
 

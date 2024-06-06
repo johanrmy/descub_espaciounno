@@ -21,8 +21,8 @@ class NearbyLocation {
 
   factory NearbyLocation.fromJson(Map<String, dynamic> json) => NearbyLocation(
     partnership: Partnership.fromJson(json["partnership"]),
-    artist: Artist.fromJson(json["artist"]),
-    mural: Mural.fromJson(json["mural"]),
+    artist: Artist.fromJson(json["artistJson"]),
+    mural: Mural.fromJson(json["muralJson"]),
   );
 
   Map<String, dynamic> toJson() => {
