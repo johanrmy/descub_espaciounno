@@ -10,7 +10,7 @@ class ScannerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
         MediaQuery.of(context).size.height < 400)
-        ? 150.0
+        ? 200.0
         : 270.0;
 
     return Scaffold(
