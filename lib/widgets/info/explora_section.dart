@@ -131,7 +131,7 @@ class _ExploraSectionState extends State<ExploraSection> {
             alignment: Alignment.bottomCenter,
             margin: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.05,
-                vertical: 40
+                vertical: 10
             ),
             height: MediaQuery.of(context).size.height * 0.1,
             decoration: BoxDecoration(
