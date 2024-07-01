@@ -5,7 +5,7 @@ Future<bool> openSocialMediaProfile(String username, String socialMedia) async {
   if (socialMedia == 'tiktok'){
     url = Uri.parse('https://www.$socialMedia.com/@$username');
   }else{
-    url = Uri.parse('$socialMedia://user?username=$username');
+    url = Uri.parse('https://www.$socialMedia.com/$username');
   }
   if (await canLaunchUrl(url)) {
     await launchUrl(url);
