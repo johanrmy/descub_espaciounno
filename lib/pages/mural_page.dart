@@ -62,7 +62,7 @@ class MuralPageState extends State<MuralPage> {
         height: MediaQuery.of(context).size.height,
         color: AppColors.appLight,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

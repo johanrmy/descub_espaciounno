@@ -12,14 +12,15 @@ class CarouselMural extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 10.0),
+      margin: const EdgeInsets.only(top: 5.0),
+      width: size,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.25),
             blurRadius: 4,
-            offset: const Offset(1, 2),
+            offset: const Offset(0, 1),
           ),
         ],
       ),
