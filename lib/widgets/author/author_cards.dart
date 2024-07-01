@@ -86,7 +86,7 @@ class AuthorCards extends StatelessWidget {
                                 ),
                               ),
                               InkWell(
-                                onTap: () => openSocialMediaProfile(usersSocialMedia[1], 'fb'),
+                                onTap: () => openSocialMediaProfile(usersSocialMedia[1], 'facebook'),
                                 child: SvgPicture.asset(
                                   'assets/images/facebook_color_icon.svg',
                                   width: 60,

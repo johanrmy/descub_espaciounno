@@ -31,7 +31,8 @@ class AuthorPage extends StatelessWidget {
         elevation: 0,
         foregroundColor: AppColors.appDark,
       ),
-        body: Container(
+      body: SingleChildScrollView(
+        child: Container(
           height: MediaQuery.of(context).size.height,
           color: Colors.white,
           child: Padding(
@@ -47,8 +48,9 @@ class AuthorPage extends StatelessWidget {
                 ],
               ),
             ),
-          )
-      )
+          ),
+        ),
+      ),
     );
   }
 }
